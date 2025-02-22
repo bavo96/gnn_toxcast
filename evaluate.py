@@ -14,7 +14,9 @@ if __name__ == "__main__":
             data = f.readlines()
             auc = float(data[0].split()[-1])
             print(f"AUC on test set of {task}: {auc:.3f}")
+            # if auc <= 0.5:
+            #     continue
             count += 1
             total_auc += auc
 
-    print(f"Average AUC: {total_auc / len(tasks):.3f}")
+    print(f"Average AUC: {total_auc / count:.3f}")

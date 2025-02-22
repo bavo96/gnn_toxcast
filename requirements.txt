@@ -4,4 +4,5 @@ rdkit
 scikit-learn
 pandas
 torch-scatter
+matplotlib
 

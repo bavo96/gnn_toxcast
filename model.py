@@ -179,7 +179,8 @@ class CustomGNN(torch.nn.Module):
         edge_attr = data.edge_attr
         batch = data.batch
 
-        x = F.relu(self.lin_a(x))  # (N, 46) -> (N, hidden_channels)
+        x = self.lin_a(x)
+        x = F.relu(x)  # (N, 46) -> (N, hidden_channels)
         edge_attr = F.relu(self.lin_b(edge_attr))  # (N, 10) -> (N, hidden_channels)
 
         # mol conv block
@@ -209,14 +210,10 @@ class FocalLoss(nn.Module):
         input: [N, C], float32
         target: [N, ], int64
         """
-        # logpt = F.log_softmax(input, dim=1) # 1: 0.8, 0: 0.2
-        # pt = torch.exp(logpt)
-        # logpt = (1-pt)**self.gamma * logpt
-        # loss = F.nll_loss(logpt, target, self.weight)
+        eps = 1e-10  # Avoid inf for log
 
         p = F.softmax(input, dim=1)
-        logp = torch.log(p)
-        logits = (1 - p) ** self.gamma * logp
+        logits = (1 - p) ** self.gamma * torch.log(p + eps)
         loss = F.nll_loss(logits, target)
 
         return loss

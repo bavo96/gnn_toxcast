@@ -89,7 +89,11 @@ if __name__ == "__main__":
     print(f"Number of tasks that aren't imbalanced: {len(best_dist)}")
     print(f"Some Tasks: {best_dist[:5]}")
 
+    # exception = "NCCT_QuantiLum_inhib_dn"
     for i, task in enumerate(best_dist):
+        # if exception not in task[0]:
+        #     continue
+
         print(f"===> Processing {task[0]}, {i+1}/{len(best_dist)}...")
         ### Load model
         model = CustomGNN(
