@@ -1,0 +1,7 @@
+torch
+torch-geometric
+rdkit
+scikit-learn
+pandas
+torch-scatter
+

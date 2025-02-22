@@ -54,16 +54,19 @@ def get_data_distribution(df):
 
 
 if __name__ == "__main__":
+    result_dir = "tasks-final/"
     df = pd.read_csv("toxcast_data.csv")
     print(f"Number of rows in original dataset: {df.shape[0]}")
     print(f"Number of tasks: {df.shape[1] - 1}")
     print(f"Some Tasks: {list(df.columns.values)[1:5]}")
 
     best_dist = get_data_distribution(df)
-    print(f"Number of tasks that aren't imbalanced: {len(best_dist)}")
-    print(f"Some Tasks: {best_dist[:5]}")
+    # print(f"Number of tasks that aren't imbalanced: {len(best_dist)}")
+    # print(f"Some Tasks: {best_dist[:5]}")
 
-    for task in best_dist[:2]:
+    print("Checking models...")
+    for task in best_dist:
+        print(f"===> Processing {task[0]}...")
         ### Load data
         labels = []
         data_list = []
@@ -75,7 +78,7 @@ if __name__ == "__main__":
                     labels.append(data_obj.y)
                     data_list.append(data_obj)
 
-        print(f"Number of rows after preprocessing: {len(data_list)}")
+        # print(f"Number of rows after preprocessing: {len(data_list)}")
 
         # (Optional) Split into train and test sets
         batch_size = 32
@@ -84,7 +87,6 @@ if __name__ == "__main__":
         )
         train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
         test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
-        print(f"===> Processing {task[0]}...")
 
         ### Load model
         model = CustomGNN(
@@ -100,15 +102,15 @@ if __name__ == "__main__":
         )
         model.load_state_dict(
             torch.load(
-                os.path.join("tasks", task[0], "best_models/best_model.pt"),
+                os.path.join(result_dir, task[0], "best_models/best_model.pt"),
                 weights_only=True,
             )
         )
         train_acc, train_auc, train_cf = test(model, train_loader)
         test_acc, test_auc, test_cf = test(model, test_loader)
 
-        with open("tasks/" + task[0] + "/metrics.txt", "r") as f:
-            auc = float(f.read().split()[-1])
-            print(auc, test_auc)
-            if auc == test_auc:
-                print("Correct AUC.")
+        with open(result_dir + task[0] + "/metrics.txt", "r") as f:
+            auc = float(f.readlines()[0].split()[-1])
+            if auc != test_auc:
+                print(f"Incorrect AUC: {task[0]}")
+    print("All correct.")
