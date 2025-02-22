@@ -1,6 +1,6 @@
 # gnn_toxcast
 
-This repository implements a simple version of HiGNN for ToxCast dataset.
+This repository implements a simple version of [HiGNN](https://github.com/idrugLab/hignn) for ToxCast dataset.
 
 For training:
 ```bash
