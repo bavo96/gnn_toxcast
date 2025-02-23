@@ -74,12 +74,14 @@ def get_data_distribution(df):
 
 def save_fig(cf, parent_dir, fig_name):
     disp = ConfusionMatrixDisplay(confusion_matrix=cf, display_labels=["0", "1"])
-    disp.plot()
     output_path = os.path.join(parent_dir, f"{fig_name}.png")
-    plt.savefig(output_path)  # Save as PNG
+    disp.plot()
+    disp.figure_.savefig(output_path)
+    plt.close("all")
 
 
 if __name__ == "__main__":
+    result_dir = "tasks"
     df = pd.read_csv("toxcast_data.csv")
     print(f"Number of rows in original dataset: {df.shape[0]}")
     print(f"Number of tasks: {df.shape[1] - 1}")
@@ -149,13 +151,13 @@ if __name__ == "__main__":
         fig_path = "figs"
         metrics_name = "metrics.txt"
 
-        Path(os.path.join("tasks", task[0], model_path)).mkdir(
+        Path(os.path.join(result_dir, task[0], model_path)).mkdir(
             parents=True, exist_ok=True
         )
-        Path(os.path.join("tasks", task[0], fig_path)).mkdir(
+        Path(os.path.join(result_dir, task[0], fig_path)).mkdir(
             parents=True, exist_ok=True
         )
-        output_file = open(os.path.join("tasks", task[0], metrics_name), "w")
+        output_file = open(os.path.join(result_dir, task[0], metrics_name), "w")
 
         start = time.time()
         for epoch in range(1, num_epochs + 1):
@@ -169,12 +171,14 @@ if __name__ == "__main__":
                 if test_auc > best_auc:
                     best_auc = test_auc
                     save_fig(
-                        train_cf, os.path.join("tasks", task[0], fig_path), "train"
+                        train_cf, os.path.join(result_dir, task[0], fig_path), "train"
                     )
-                    save_fig(test_cf, os.path.join("tasks", task[0], fig_path), "test")
+                    save_fig(
+                        test_cf, os.path.join(result_dir, task[0], fig_path), "test"
+                    )
                     torch.save(
                         model.state_dict(),
-                        os.path.join("tasks", task[0], model_path, "best_model.pt"),
+                        os.path.join(result_dir, task[0], model_path, "best_model.pt"),
                     )
         end = time.time() - start
         output_file.write(f"Best AUC on test set: {best_auc}\n")

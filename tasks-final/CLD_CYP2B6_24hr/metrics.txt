@@ -1,2 +1,2 @@
-Best AUC on test set: 0.6561085972850679
-Training time: 188.75109481811523 seconds
+Best AUC on test set: 0.7092760180995474
+Training time: 188.75787806510925 seconds
