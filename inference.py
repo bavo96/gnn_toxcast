@@ -17,40 +17,14 @@ random.seed(0)
 
 
 @torch.no_grad()
-def test(model, test_loader):
+def predict(model, test_loader):
     model.eval()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    correct = 0
-    y_pred, y_true = [], []
 
-    for data in test_loader:
-        data = data.to(device)
-        out = model(data)
-        pred = out.argmax(dim=1)
-        y_pred.extend(pred.tolist())
-        y_true.extend(data.y.view(-1).tolist())
-        correct += (pred == data.y.view(-1)).sum().item()
-    # print(len(y_pred), len(y_true), len(loader.dataset))
-    # print(y_pred, y_true)
-    auc = roc_auc_score(y_true, y_pred)
-    cf = confusion_matrix(y_true, y_pred)
-    return correct / len(test_loader.dataset), auc, cf
-
-
-def get_data_distribution(df):
-    best_dist = []
-    for task in list(df.columns.values)[1:]:
-        # print(f"Processing {task}...")
-        # data_list = []
-        zeros = df[task].value_counts(dropna=True)[0]
-        ones = df[task].value_counts(dropna=True)[1]
-
-        dist = ones / (ones + zeros)
-        # print(f"Total: {ones+zeros}, ones: {ones}, ratio: {dist}")
-        if dist > 0.5 and dist < 0.6:
-            best_dist.append((task, dist))
-    # print(f"Best task: {_label}, distribution: {best_dist}")
-    return best_dist
+    data = data.to(device)
+    out = model(data)
+    pred = out.argmax(dim=1)
+    return
 
 
 if __name__ == "__main__":
